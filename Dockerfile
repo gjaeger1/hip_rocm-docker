@@ -15,6 +15,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   rocm-dev \
   cmake \
   git \
+  wget \
+  unzip \
   build-essential && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
@@ -25,19 +27,21 @@ RUN mkdir /custom
 WORKDIR /custom
 
 # install rocPRIM
-RUN git clone https://github.com/ROCmSoftwarePlatform/rocPRIM.git
-WORKDIR /custom/rocPRIM
+RUN wget https://github.com/ROCmSoftwarePlatform/rocPRIM/archive/develop.zip -O rocPRIM-develop.zip
+RUN unzip rocPRIM-develop.zip -d rocPRIM
+WORKDIR /custom/rocPRIM/rocPRIM-develop
 RUN mkdir build
-WORKDIR /custom/rocPRIM/build
+WORKDIR /custom/rocPRIM/rocPRIM-develop/build
 RUN CXX=hcc cmake ../.
 RUN make
 RUN make install
 
 # install rocThrust
-RUN git clone https://github.com/ROCmSoftwarePlatform/rocThrust
-WORKDIR /custom/rocThrust
+RUN wget https://github.com/ROCmSoftwarePlatform/rocThrust/archive/develop.zip -O rocThrust-develop.zip
+RUN unzip rocThrust-develop.zip -d rocThrust
+WORKDIR /custom/rocThrust/rocThrust-develop
 RUN mkdir build
-WORKDIR /custom/rocThrust/build
+WORKDIR /custom/rocThrust/rocThrust-develop/build
 RUN CXX=hcc cmake ../.
 RUN make
 RUN make install
