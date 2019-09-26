@@ -14,11 +14,33 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   libelf1 \
   rocm-dev \
   cmake \
+  git \
   build-essential && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
 ENV PATH "${PATH}:/opt/rocm/bin"
+
+RUN mkdir /custom
+WORKDIR /custom
+
+# install rocPRIM
+RUN git clone https://github.com/ROCmSoftwarePlatform/rocPRIM.git
+WORKDIR /custom/rocPRIM
+RUN mkdir build
+WORKDIR /custom/rocPRIM/build
+RUN CXX=hcc cmake ../.
+RUN make
+RUN make install
+
+# install rocThrust
+RUN git clone https://github.com/ROCmSoftwarePlatform/rocThrust
+WORKDIR /custom/rocThrust
+RUN mkdir build
+WORKDIR /custom/rocThrust/build
+RUN CXX=hcc cmake ../.
+RUN make
+RUN make install
 
 # Default to a login shell
 WORKDIR /root
