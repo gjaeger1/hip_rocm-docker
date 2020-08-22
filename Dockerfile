@@ -3,7 +3,7 @@
 
 # modified version of https://github.com/RadeonOpenCompute/ROCm-docker/blob/master/dev/Dockerfile-ubuntu-18.04
 
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 # set system time
 ENV TZ=Europe/Berlin
@@ -18,6 +18,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl libnuma-de
   sudo \
   libelf1 \
   rocm-dev \
+  rocprim \
+  rocthrust \
+  rocfft \
+  rocblas \
   cmake \
   git \
   wget \
@@ -28,30 +32,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl libnuma-de
   rm -rf /var/lib/apt/lists/*
 
 ENV PATH "${PATH}:/opt/rocm/bin"
-
-RUN mkdir /custom
-WORKDIR /custom
-
-# install rocPRIM
-RUN wget https://github.com/ROCmSoftwarePlatform/rocPRIM/archive/develop.zip -O rocPRIM-develop.zip
-RUN unzip rocPRIM-develop.zip -d rocPRIM
-WORKDIR /custom/rocPRIM/rocPRIM-develop
-RUN mkdir build
-WORKDIR /custom/rocPRIM/rocPRIM-develop/build
-RUN CXX=hcc cmake -DBUILD_TEST=OFF ../.
-RUN make
-RUN make install
-
-# install rocThrust
-WORKDIR /custom
-RUN wget https://github.com/ROCmSoftwarePlatform/rocThrust/archive/develop.zip -O rocThrust-develop.zip
-RUN unzip rocThrust-develop.zip -d rocThrust
-WORKDIR /custom/rocThrust/rocThrust-develop
-RUN mkdir build
-WORKDIR /custom/rocThrust/rocThrust-develop/build
-RUN CXX=hcc cmake -DBUILD_TEST=OFF ../.
-RUN make
-RUN make install
 
 # Default to a login shell
 WORKDIR /root
